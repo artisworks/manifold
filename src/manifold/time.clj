@@ -2,24 +2,19 @@
   {:author "Zach Tellman"
    :doc    "This namespace contains methods for converting units of time, with milliseconds as the base representation, and for deferring execution of functions to some time in the future.  In practice, the methods here are not necessary to use Manifold effectively - `manifold.deferred/timeout` and `manifold.stream/periodically` are more directly useful - but they are available for anyone who should need them."}
   (:require
-    [clojure.tools.logging :as log]
-    [manifold.executor :as ex]
-    [clojure.string :as str]
-    [manifold.utils :refer [definterface+]]
-    [potemkin.types :refer [defprotocol+]]
-    [clj-commons.primitive-math :as p])
+   [clj-commons.primitive-math :as p]
+   [clojure.string :as str]
+   [clojure.tools.logging :as log]
+   [manifold.executor :as ex]
+   [manifold.utils :refer [definterface+]]
+   [potemkin.types :refer [defprotocol+]])
   (:import
-    [java.util
-     Calendar
-     TimeZone]
-    [java.util.concurrent
-     Future
-     Executor
-     Executors
-     TimeUnit
-     ScheduledExecutorService
-     ScheduledThreadPoolExecutor
-     TimeoutException]))
+   [java.util Calendar TimeZone]
+   [java.util.concurrent
+    Future
+    ScheduledExecutorService
+    ScheduledThreadPoolExecutor
+    TimeUnit]))
 
 (defn nanoseconds
   "Converts nanoseconds -> milliseconds"
@@ -78,9 +73,9 @@
         (let [[desc ^double val] (first intervals)]
           (if (p/>= n val)
             (recur
-              (str s (int (p// n val)) desc " ")
-              (rem n val)
-              (rest intervals))
+             (str s (int (p// n val)) desc " ")
+             (rem n val)
+             (rest intervals))
             (recur s n (rest intervals))))))))
 
 (let [sorted-units         [:millisecond Calendar/MILLISECOND
@@ -93,10 +88,10 @@
       unit->calendar-unit  (apply hash-map sorted-units)
       units                (->> sorted-units (partition 2) (map first))
       unit->cleared-fields (zipmap
-                             units
-                             (map
-                               #(->> (take % units) (map unit->calendar-unit))
-                               (range (count units))))]
+                            units
+                            (map
+                             #(->> (take % units) (map unit->calendar-unit))
+                             (range (count units))))]
 
   (defn floor
     "Takes a `timestamp`, and rounds it down to the nearest even multiple of the `unit`.
@@ -137,7 +132,7 @@
 (defprotocol+ IMockClock
   (now [clock] "Returns the current time for the clock")
   (advance [clock time]
-    "Advances the mock clock by the specified interval of `time`.
+           "Advances the mock clock by the specified interval of `time`.
 
     Advancing the clock is a continuous action - the clock doesn't just jump
     from `now` to `new-now = (+ (now clock) time)`. Rather, for each scheduled
@@ -230,13 +225,13 @@
       cnt       (atom 0)
       clock     (delay
                   (scheduled-executor->clock
-                    (doto (ScheduledThreadPoolExecutor.
-                            1
-                            (ex/thread-factory
-                              (fn []
-                                (str "manifold-scheduler-pool-" (swap! cnt inc)))
-                              (deliver (promise) nil)))
-                      (.setRemoveOnCancelPolicy true))))]
+                   (doto (ScheduledThreadPoolExecutor.
+                          1
+                          (ex/thread-factory
+                           (fn []
+                             (str "manifold-scheduler-pool-" (swap! cnt inc)))
+                           (deliver (promise) nil)))
+                     (.setRemoveOnCancelPolicy true))))]
   (def ^:dynamic ^IClock *clock*
     (reify IClock
       (in [_ interval f] (.in ^IClock @clock interval f))

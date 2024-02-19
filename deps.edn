@@ -1,0 +1,7 @@
+{:deps {org.clojure/clojure            {:mvn/version "1.11.1"}
+        org.clojure/tools.logging      {:mvn/version "1.2.4" :exclusions [org.clojure/clojure]}
+        org.clj-commons/dirigiste      {:mvn/version "1.0.4"}
+        org.clj-commons/primitive-math {:mvn/version "1.0.0"}
+        riddley/riddley                {:mvn/version "0.2.0"}
+        org.clojure/core.async         {:mvn/version "1.6.673"}
+        potemkin/potemkin              {:mvn/version "0.4.6"}}}

@@ -226,7 +226,7 @@
       clock     (delay
                   (scheduled-executor->clock
                    (doto (ScheduledThreadPoolExecutor.
-                          1
+                          num-cores
                           (ex/thread-factory
                            (fn []
                              (str "manifold-scheduler-pool-" (swap! cnt inc)))
